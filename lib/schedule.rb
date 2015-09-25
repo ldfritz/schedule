@@ -1,4 +1,5 @@
 require_relative "event"
+require "date"
 
 class Schedule
   def self.load_file(filename)

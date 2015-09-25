@@ -1,0 +1,40 @@
+#!/usr/bin/env ruby
+
+if %w[-t --test].include?(ARGV[0])
+  ARGV.shift
+  path = "#{File.expand_path(File.dirname(__FILE__))}/../test/"
+  Dir.entries(path).find_all {|f| f =~ /^test_/ }.each do |filename|
+    require_relative path + filename
+  end
+  exit
+end
+
+require_relative "../lib/schedule"
+
+schedule = Schedule.load_file("schedule.yaml")
+
+days = []
+ARGV[0].to_i.times do |mod|
+  date = DateTime.now + mod
+  days << [date, schedule[date.strftime("%Y-%m-%d")]]
+end
+
+days.each do |date, events|
+  puts date.strftime("%a %Y-%m-%d")
+  events.each do |event|
+    print "  "
+    if event.end_date and event.end_date != event.start_date
+      print event.start_date.strftime("%m/%d")
+      print " " + event.start_time if event.start_time
+      print "-" + event.end_date.strftime("%m/%d")
+      print " " + event.end_time if event.end_time
+      print " "
+    elsif event.start_time or event.end_time
+      print event.start_time if event.start_time
+      print "-" + event.end_time if event.end_time
+      print " "
+    end
+    print event.desc + "\n"
+  end
+  puts
+end

@@ -1,3 +1,5 @@
+require "date"
+
 class Event
   attr_reader :start_date, :start_time, :end_date, :end_time, :desc
 
